@@ -3,8 +3,8 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine, text as sql_text
 from sqlalchemy import MetaData, Table, Column, Integer, String, UniqueConstraint
-
 import logging
+import argparse
 
 def fetch_data(json_path:str) -> pd.DataFrame:
     response = requests.get(json_path)
@@ -64,12 +64,19 @@ def ingest_data(df, table_name="corec_usage", sqlite_file="/home/jake/scripts/wo
 
 def main():
     main_dir = os.path.dirname(__file__)
-    json_path:str = "https://goboardapi.azurewebsites.net/api/FacilityCount/GetCountsByAccount?AccountAPIKey=aedeaf92-036d-4848-980b-7eb5526ea40c"
-    sqlite_path:str = "./data_public/corec_usage.db"
 
-    fetched_dataframe = fetch_data(json_path = json_path)
-    create_corec_usage_table(sqlite_file = sqlite_path)
-    ingest_data(fetched_dataframe, sqlite_file = sqlite_path)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json_path", type=str, default="https://goboardapi.azurewebsites.net/api/FacilityCount/GetCountsByAccount?AccountAPIKey=aedeaf92-036d-4848-980b-7eb5526ea40c", 
+                        help = "Path of JSON data on web to pull from")
+    
+    parser.add_argument("--sqlite_file", type=str, default="./data_public/corec_usage.db", 
+                        help = "Path of SQLite db file to store results")
+
+    args = parser.parse_args()
+
+    fetched_dataframe = fetch_data(json_path = args.json_path)
+    create_corec_usage_table(sqlite_file = args.sqlite_file)
+    ingest_data(fetched_dataframe, sqlite_file = args.sqlite_file)
 
 
 if __name__ == "__main__":

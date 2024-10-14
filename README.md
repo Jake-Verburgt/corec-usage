@@ -14,9 +14,9 @@ This historical data was really nice for deciding what time of day to plan a tri
 # How to use:
 ## 1) Install Dependencies:
 
-```pandas```, ```sqlite3```, ```requests```, ```sns```, ```matplitlib```, ```seaborn```
+```pandas```, ```sqlite3```, ```sqalchemy```, ```requests```, ```sns```, ```matplitlib```, ```seaborn```
 ### Install conda environment from file
-
+ * ```conda install -f environment.yaml```
 ## 2) Set Up Cron Job to collect data
 Cron is the job scheduling bit that will run the scraping code on a regular intervals. From experience, the Corec seems to update their data on hour intervals at most, so an interval of 30 minutes should be fine to make sure no data is missed. 
 

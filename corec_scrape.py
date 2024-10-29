@@ -11,6 +11,7 @@ def fetch_data(json_path:str) -> pd.DataFrame:
     if response.ok:
         fetched_dataframe = pd.read_json(response.text) #Returns in json format
         fetched_dataframe = fetched_dataframe[["LocationId", "TotalCapacity", "LocationName", "LastUpdatedDateAndTime", "LastCount", "FacilityId", "IsClosed"]]
+        fetched_dataframe["IsClosed"] = fetched_dataframe.IsClosed.astype(int) #For consistency
         return fetched_dataframe
     else:
         raise(ConnectionError("Unable to fetch data"))
@@ -69,7 +70,7 @@ def main():
     parser.add_argument("--json_path", type=str, default="https://goboardapi.azurewebsites.net/api/FacilityCount/GetCountsByAccount?AccountAPIKey=aedeaf92-036d-4848-980b-7eb5526ea40c", 
                         help = "Path of JSON data on web to pull from")
     
-    parser.add_argument("--sqlite_file", type=str, default="./data_public/corec_usage.db", 
+    parser.add_argument("--sqlite_file", type=str, default=f"{main_dir}/data_public/corec_usage.db", 
                         help = "Path of SQLite db file to store results")
 
     args = parser.parse_args()

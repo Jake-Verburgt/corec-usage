@@ -10,11 +10,10 @@ This historical data was really nice for deciding what time of day to plan a tri
 2) Appends any new data to a database
 3) Runs data analysis and visualization to guide my "when to go to corec" decisions.
 
-
 # How to use:
 ## 1) Install Dependencies:
 
-```pandas```, ```sqlite3```, ```sqalchemy```, ```requests```, ```sns```, ```matplitlib```, ```seaborn```
+```pandas```, ```sqlite3```, ```sqalchemy```, ```requests```, ```matplitlib```, ```seaborn```
 ### Install conda environment from file
  * ```conda install -f environment.yaml```
 ## 2) Set Up Cron Job to collect data

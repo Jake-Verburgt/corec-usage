@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sqlalchemy import create_engine,text as sql_text
 from datetime import datetime as dt
 import os
@@ -33,7 +34,8 @@ def read_db(sqlite_file: str ="./data_public/corec_usage.db",
     existing_data["hour_of_day"] = existing_data.LastUpdatedDateAndTime.dt.round("h").dt.hour #Get nearest hour (0-23)
     existing_data["hour_of_day"] = existing_data["hour_of_day"].replace(0, 24)
     existing_data["date"] = existing_data["LastUpdatedDateAndTime"].dt.date #Extract date
-    existing_data["IsClosed"] = existing_data.IsClosed.astype(bool)
+
+    existing_data["percent_util"] = existing_data.LastCount / existing_data.TotalCapacity
 
     existing_data.sort_values(by="LastUpdatedDateAndTime", inplace=True)
 
@@ -48,20 +50,17 @@ def main():
     data:pd.DataFrame = read_db()
     day_hour_averages = data.groupby(["LocationId", "day_name", "hour_of_day"]).mean().reset_index().sort_values(["day_name", "hour_of_day"])
     
-    day_hour_averages = day_hour_averages.pivot(index="day_name", columns=["LocationId", "hour_of_day"], values="LastCount")
+    day_hour_averages = day_hour_averages.pivot(index="day_name", columns=["LocationId", "hour_of_day"], values="percent_util") #percent_util #LastCount
     day_hour_averages.fillna(0.0, inplace = True)
 
     ids_to_name = data[["LocationId", "LocationName"]].drop_duplicates().set_index("LocationId")["LocationName"].to_dict()
+    names_to_id = { name.strip():id for id, name in  ids_to_name.items()}
 
-    print(day_hour_averages[5976])
+    for name, id in names_to_id.items():
+        fig, ax = plt.subplots(1, 1, figsize=(16, 8))
+        sns.heatmap(day_hour_averages[id], ax=ax)
 
-
-# fig, axes = plt.subplots(len(relevant_areas), 1, figsize=(20, 4*len(relevant_areas)), sharex=True, facecolor="white")
-# for area, ax in zip(relevant_areas, axes):
-#     occupancy_data = day_hour_averages[area]
-#     ax.set_title(area, fontsize=16)
-#     sns.heatmap(occupancy_data, ax=ax)
-#     ax.set_ylabel(None)
+        fig.savefig(f"./data_public/images/{name.replace(' ', '_').replace('/', '-')}.png")
 
 
 if __name__ == "__main__":

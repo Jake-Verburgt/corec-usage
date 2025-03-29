@@ -58,9 +58,9 @@ def main():
 
     for name, id in names_to_id.items():
         fig, ax = plt.subplots(1, 1, figsize=(16, 8))
+        fig.tight_layout()
         sns.heatmap(day_hour_averages[id], ax=ax)
-
-        fig.savefig(f"./data_public/images/{name.replace(' ', '_').replace('/', '-')}.png")
+        fig.savefig(f"./data_private/images/{name.replace(' ', '_').replace('/', '-')}.png")
 
 
 if __name__ == "__main__":
